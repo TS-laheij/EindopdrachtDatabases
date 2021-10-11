@@ -140,6 +140,59 @@ ON tbldump.uitvoering3 = derde.uitvoering
 INNER JOIN tblvermogen
 ON tbldump.vermogenPK = tblvermogen.PK;
 
+#This view will show all the car brands in the QT application
+
+CREATE VIEW showMerk AS SELECT tblmerk.Merk FROM tblmerk;
+
+# View to show car model and specifications
+# In QT, use this view in combination with:
+# WHERE showmodel.merk LIKE "Mercedes-Benz"
+
+
+CREATE VIEW showModel AS
+SELECT tblmerk.merk AS merk, CONCAT(tblmodel.Model, " ", eerste.Uitvoering, " ", tweede.Uitvoering , " ", derde.Uitvoering ) AS "Automodellen"
+FROM tblmodel
+INNER JOIN tbltype
+ON tbltype.IDModel = tblmodel.ID
+INNER JOIN tbluitvoering eerste
+ON tbltype.IDUitvoering1 = eerste.ID
+INNER JOIN tbluitvoering tweede
+ON tbltype.IDUitvoering2 = tweede.ID
+INNER JOIN tbluitvoering derde
+ON tbltype.IDUitvoering3 = derde.ID
+LEFT JOIN tblmerk
+ON tblmerk.ID = tblmodel.IDMerk;
+
+# View to show location of brand
+# In QT, use in combination with:
+# WHERE showlocatie.Merk LIKE "audi"
+
+CREATE VIEW showLocatie AS
+SELECT tblMerk.Merk, CONCAT("Het hoofdkantoor van ", tblMerk.merk, "  is gevestigd in: ", tblstad.stad, ", ", tblland.land) AS locatieZin
+FROM tblMerk
+INNER JOIN tblstad
+ON tblmerk.IDStad = tblstad.ID
+INNER JOIN tblland 
+ON tblland.ID = tblstad.IDLand;
+
+#
+#
+#
+
+CREATE VIEW showVermogenModel AS
+SELECT CONCAT(tblmodel.Model, " ", eerste.Uitvoering, " ", tweede.Uitvoering , " ", derde.Uitvoering ) AS "Automodellen", tblvermogen.PK
+FROM tblmodel
+INNER JOIN tbltype
+ON tbltype.IDModel = tblmodel.ID
+INNER JOIN tbluitvoering eerste
+ON tbltype.IDUitvoering1 = eerste.ID
+INNER JOIN tbluitvoering tweede
+ON tbltype.IDUitvoering2 = tweede.ID
+INNER JOIN tbluitvoering derde
+ON tbltype.IDUitvoering3 = derde.ID
+INNER JOIN tblvermogen
+ON tbltype.IDVermogen =tblvermogen.ID
+
 
 
 

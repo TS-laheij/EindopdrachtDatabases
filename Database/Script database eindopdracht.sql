@@ -21,7 +21,7 @@ CREATE TABLE tblMerk
     ID int AUTO_INCREMENT NOT NULL,
     IDStad int NOT NULL,
     Merk VARCHAR(15) NOT NULL,
-    Logo blob,
+    Logo VARCHAR(25) NOT NULL,
     PRIMARY KEY (ID),
     FOREIGN KEY (IDStad) REFERENCES tblStad(ID),
     UNIQUE(Merk)
@@ -98,8 +98,8 @@ FROM tbldump
 INNER JOIN tblland 
 ON tblland.Land = tbldump.land;
 
-INSERT IGNORE INTO tblmerk(IDStad, Merk)
-SELECT DISTINCT tblstad.ID, tbldump.merk
+INSERT IGNORE INTO tblmerk(IDStad, Merk, Logo)
+SELECT DISTINCT tblstad.ID, tbldump.merk, CONCAT(LOWER(REPLACE(merk, " ", "-")), "-logo.png")
 FROM tbldump
 INNER JOIN tblstad
 ON tblstad.stad = tbldump.stad;
@@ -168,7 +168,7 @@ ON tblmerk.ID = tblmodel.IDMerk;
 # WHERE showlocatie.Merk LIKE "audi"
 
 CREATE VIEW showLocatie AS
-SELECT tblMerk.Merk, CONCAT("Het hoofdkantoor van ", tblMerk.merk, "  is gevestigd in: ", tblstad.stad, ", ", tblland.land) AS locatieZin
+SELECT tblMerk.Merk, CONCAT("Het hoofdkantoor van ", tblMerk.merk, " is gevestigd in: ", tblstad.stad, ",", tblland.land) AS locatieZin
 FROM tblMerk
 INNER JOIN tblstad
 ON tblmerk.IDStad = tblstad.ID

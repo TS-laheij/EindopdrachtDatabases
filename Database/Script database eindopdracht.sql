@@ -175,9 +175,9 @@ ON tblmerk.IDStad = tblstad.ID
 INNER JOIN tblland 
 ON tblland.ID = tblstad.IDLand;
 
-#
-#
-#
+# View to show PK or KW of brand
+# In QT, use in combination with:
+# WHERE showvermogenmodel.Automodellen = "audi"
 
 CREATE VIEW showVermogenModel AS
 SELECT CONCAT(tblmodel.Model, " ", eerste.Uitvoering, " ", tweede.Uitvoering , " ", derde.Uitvoering ) AS "Automodellen", tblvermogen.PK

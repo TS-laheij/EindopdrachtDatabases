@@ -24,3 +24,10 @@ FORMS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/'../../../../../../Program Files (x86)/MySQL/MySQL Connector C 6.1/lib/' -llibmysql
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/'../../../../../../Program Files (x86)/MySQL/MySQL Connector C 6.1/lib/' -llibmysqld
+else:unix: LIBS += -L$$PWD/'../../../../../../Program Files (x86)/MySQL/MySQL Connector C 6.1/lib/' -llibmysql
+
+INCLUDEPATH += $$PWD/'../../../../../../Program Files (x86)/MySQL/MySQL Connector C 6.1/include'
+DEPENDPATH += $$PWD/'../../../../../../Program Files (x86)/MySQL/MySQL Connector C 6.1/include'

@@ -9,7 +9,9 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    this->setStyleSheet("background-color: white;");
+    this->setStyleSheet("background-color: white;"); // Set background color of window to white
+
+    // Hide all items that should be hidden at initial view of the window
 
     ui->lLocatie->hide();
     ui->lModel->hide();
@@ -18,24 +20,29 @@ MainWindow::MainWindow(QWidget *parent)
     ui->lwVermogen->hide();
     ui->lwLocatie->hide();
     ui->lwModel->hide();
-    MainWindow::connectDB();
-    QPixmap pixmap("C:/Users/timla/Documents/GitHub/EindopdrachtDatabases/EindopdrachtDB/NFS images/Need_For_Speed_logo.png");
-    ui->lHomePlaatje->setPixmap(pixmap);
 
-     if(db.open()){
+    connectDB(); // Connect to the database
+
+    QPixmap pixmap("C:/Users/timla/Documents/GitHub/EindopdrachtDatabases/EindopdrachtDB/NFS images/Need_For_Speed_logo.png"); // File path to 'home' picture
+    ui->lHomePlaatje->setPixmap(pixmap); // Set the image to pixmap of label
+
+     if(db.open()){ // Open connection to the database
          cout << "Database connected" << endl;
+
          QSqlQuery query;
-         if(query.exec("SELECT * FROM showMerk")){
-             while(query.next()){
+         if(query.exec("SELECT * FROM showMerk")){ // Show all brands
+
+             while(query.next()){ // While the query has a next result, add it to the list in the window
                  ui->lwMerk->addItem(query.value(0).toString());
              }
          }
+       db.close(); // Close the database connection
     }
-
      else{
         cout << "Database not connected" << endl;
      }
-    db.close();
+
+
 
 
 }
@@ -45,10 +52,12 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+// Connects to database with credentials
 void MainWindow::connectDB(){
-    db = QSqlDatabase::addDatabase("QMYSQL"); // default constructor
+
+    db = QSqlDatabase::addDatabase("QMYSQL");
          db.setHostName("localhost");
-         db.setPort(3306); // voor de zekerheid
+         db.setPort(3306);
          db.setDatabaseName("nfs");
          db.setUserName("root");
          db.setPassword("");
@@ -57,33 +66,38 @@ void MainWindow::connectDB(){
 void MainWindow::on_lwMerk_itemClicked(QListWidgetItem *item)
 {
     ui->lHomePlaatje->hide();
-    ui->lwModel->clear();
-    ui->lwModel->show();
     ui->lwVermogen->hide();
-    ui->lwVermogen->clear();
     ui->gbEenheid->hide();
+    ui->lVermogen->hide();
+
+    ui->lwModel->show();
     ui->lwLocatie->show();
-    ui->lwLocatie->clear();
     ui->lModel->show();
     ui->lLocatie->show();
-    ui->lVermogen->hide();
-    chosenMerk = item->text();
-    showImage();
+
+    ui->lwVermogen->clear();
+    ui->lwModel->clear();
+    ui->lwLocatie->clear();
+
+    chosenMerk = item->text(); // Set the current brand to selected list item
+
+    showImage(); // Show current brand image
 
    if(db.open()){
        cout << "Database connected" << endl;
 
        QSqlQuery queryModel;
-       queryModel.prepare("SELECT Automodellen FROM showModel WHERE showModel.Merk = :merktosend");
-       queryModel.bindValue(":merktosend", chosenMerk);
+       queryModel.prepare("SELECT Automodellen FROM showModel WHERE showModel.Merk = :merktosend"); // Prepare query with variable
+       queryModel.bindValue(":merktosend", chosenMerk); // Add chosen brand to the query
 
-       if(queryModel.exec()){
+       if(queryModel.exec()){ // execute the query
            while(queryModel.next()){
                ui->lwModel->addItem(queryModel.value(0).toString());
            }
        }
+       db.close();
   }
-   db.close();
+
    if(db.open()){
        QSqlQuery queryLocatie;
        queryLocatie.prepare("SELECT locatiezin FROM showLocatie WHERE showLocatie.merk = :merktosend");
@@ -116,7 +130,7 @@ void MainWindow::requestVermogen(){
      else if(ui->btKW->isChecked()){
          if(queryVermogen.exec()){
              while(queryVermogen.next()){
-                 ui->lwVermogen->addItem(QString::number(queryVermogen.value(0).toInt()/1.36));
+                 ui->lwVermogen->addItem(QString::number((round(queryVermogen.value(0).toInt()/1.36))));
              }
          }
      }

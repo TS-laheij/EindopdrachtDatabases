@@ -11,6 +11,7 @@
 #include <QListWidget>
 #include <string>
 #include <stdio.h>
+#include <math.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }

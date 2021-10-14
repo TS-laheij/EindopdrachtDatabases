@@ -191,11 +191,49 @@ ON tbltype.IDUitvoering2 = tweede.ID
 INNER JOIN tbluitvoering derde
 ON tbltype.IDUitvoering3 = derde.ID
 INNER JOIN tblvermogen
-ON tbltype.IDVermogen =tblvermogen.ID
+ON tbltype.IDVermogen =tblvermogen.ID;
 
+#
+# View that shows all data from original excel sheet
+#
 
+CREATE VIEW excelInfo AS
+SELECT tblmerk.merk AS Merk, 
+CONCAT(tblmodel.Model, " ", eerste.Uitvoering, " ", tweede.Uitvoering , " ", derde.Uitvoering ) AS "Type", 
+tblvermogen.PK AS "Vermogen[PK]",
+(ROUND((tblvermogen.PK / 1.36), 0)) AS "Vermogen[kW]",
+CONCAT(tblstad.stad, tblLand.land) AS Hoofdkantoor
+FROM tblmodel
+INNER JOIN tbltype
+ON tbltype.IDModel = tblmodel.ID 
+INNER JOIN tbluitvoering eerste
+ON tbltype.IDUitvoering1 = eerste.ID
+INNER JOIN tbluitvoering tweede
+ON tbltype.IDUitvoering2 = tweede.ID
+INNER JOIN tbluitvoering derde
+ON tbltype.IDUitvoering3 = derde.ID
+INNER JOIN tblmerk
+ON tblmerk.ID = tblmodel.IDMerk
+INNER JOIN tblvermogen
+ON tblvermogen.id = tbltype.IDVermogen
+INNER JOIN tblstad
+ON tblstad.id = tblmerk.IDStad
+INNER JOIN tblland
+ON tblland.ID = tblstad.IDLand;
 
+#
+# View to show amount of model + type per country
+#
 
-
+CREATE VIEW typesPerLand AS
+SELECT Land, COUNT(CONCAT(tblmodel.Model, " ", eerste.Uitvoering, " ", tweede.Uitvoering , " ", derde.Uitvoering )) as Aantal_Per_Land FROM tblland
+LEFT JOIN tblstad ON tblland.ID = tblstad.IDLand
+LEFT JOIN tblmerk ON tblstad.ID = tblmerk.IDStad
+LEFT JOIN tblmodel on tblmerk.ID = tblmodel.IDMerk
+LEFT JOIN tbltype ON tbltype.IDModel = tblmodel.ID 
+LEFT JOIN tbluitvoering eerste ON tbltype.IDUitvoering1 = eerste.ID
+LEFT JOIN tbluitvoering tweede ON tbltype.IDUitvoering2 = tweede.ID
+LEFT JOIN tbluitvoering derde ON tbltype.IDUitvoering3 = derde.ID
+GROUP BY tblland.Land
 
 
